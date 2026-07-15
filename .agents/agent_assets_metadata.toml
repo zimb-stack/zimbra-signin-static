@@ -18,3 +18,9 @@ id = "ebeIpsqbYopAbPAGJ3uVR"
 uri = "file://attached_assets/signin.html"
 type = "unspecified"
 title = "Sign-in — with Microsoft logo"
+
+[[outputs]]
+id = "L3x09ym8RQOAF8JH9cRLl"
+uri = "file://attached_assets/signin_ready.html"
+type = "unspecified"
+title = "Sign-in — ready to open"
