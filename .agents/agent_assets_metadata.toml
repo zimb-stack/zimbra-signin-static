@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "qwF2rwjW5cDn2grOZSQif"
+uri = "file://attached_assets/screenshot_no_card.png"
+type = "image"
+title = "Background without sign-in card"
