@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e8eaf6 0%, #dde8f5 40%, #e3eaf6 70%, #d8e4f2 100%);
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #1f1f1f;
+    }
+
+    /* subtle geometric shapes in background */
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      border-radius: 40% 60% 55% 45% / 50% 40% 60% 50%;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+    body::before {
+      width: 60vw; height: 60vw;
+      top: -20vw; left: -15vw;
+      background: linear-gradient(120deg, #b3c8e8, #c5d5ed);
+    }
+    body::after {
+      width: 50vw; height: 50vw;
+      bottom: -18vw; right: -12vw;
+      background: linear-gradient(200deg, #b8cde8, #ccdaf0);
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      width: 100%;
+      max-width: 340px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Main card ── */
+    .card {
+      background: #ffffff;
+      border-radius: 4px;
+      padding: 36px 32px 28px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.12), 0 8px 24px rgba(0,0,0,.08);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      color: #1f1f1f;
+      margin-bottom: 28px;
+    }
+
+    /* underline-style input (Microsoft pattern) */
+    .field {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      color: #0067b8;
+      margin-bottom: 4px;
+    }
+
+    .field input {
+      width: 100%;
+      border: none;
+      border-bottom: 2px solid #0067b8;
+      outline: none;
+      font-size: 0.9375rem;
+      font-family: inherit;
+      padding: 4px 0 6px;
+      background: transparent;
+      color: #1f1f1f;
+      transition: border-color 0.15s;
+    }
+
+    .field input:focus {
+      border-bottom-color: #0067b8;
+    }
+
+    .field input::placeholder { color: #9e9e9e; }
+
+    /* links */
+    .links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 20px 0 28px;
+      font-size: 0.8125rem;
+    }
+
+    .links a {
+      color: #0067b8;
+      text-decoration: none;
+    }
+    .links a:hover { text-decoration: underline; }
+
+    .links .no-account { color: #1f1f1f; }
+    .links .no-account a { color: #0067b8; }
+
+    /* buttons */
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 6px 20px;
+      border-radius: 2px;
+      border: none;
+      cursor: pointer;
+      min-width: 88px;
+      transition: filter 0.15s;
+    }
+
+    .btn-back {
+      background: #edebe9;
+      color: #323130;
+    }
+    .btn-back:hover { filter: brightness(0.95); }
+
+    .btn-next {
+      background: #0067b8;
+      color: #ffffff;
+    }
+    .btn-next:hover { background: #005da6; }
+
+    /* ── Sign-in options box ── */
+    .options-card {
+      background: #ffffff;
+      border-radius: 4px;
+      padding: 0 20px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.875rem;
+      color: #1f1f1f;
+      box-shadow: 0 1px 4px rgba(0,0,0,.1);
+      cursor: pointer;
+      border: 1px solid rgba(0,0,0,.06);
+      transition: background 0.15s;
+    }
+    .options-card:hover { background: #f5f5f5; }
+
+    .options-card svg {
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    /* footer */
+    footer {
+      position: fixed;
+      bottom: 16px;
+      right: 20px;
+      font-size: 0.75rem;
+      color: #616161;
+      display: flex;
+      gap: 16px;
+      z-index: 1;
+    }
+    footer a { color: #616161; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <div class="stack">
+
+    <!-- Main sign-in card -->
+    <div class="card">
+      <h1>Sign in</h1>
+
+      <div class="field">
+        <label for="email">Email, phone, or Skype</label>
+        <input id="email" type="text" autocomplete="username" placeholder="" />
+      </div>
+
+      <div class="links">
+        <span class="no-account">No account? <a href="#">Create one!</a></span>
+        <a href="#">Can't access your account?</a>
+      </div>
+
+      <div class="actions">
+        <button class="btn-back" type="button">Back</button>
+        <button class="btn-next" type="button">Next</button>
+      </div>
+    </div>
+
+    <!-- Sign-in options -->
+    <div class="options-card" role="button" tabindex="0">
+      <!-- key icon -->
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10.5 1a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zm-5.44 7.06A5.5 5.5 0 1 1 14 6.5a5.5 5.5 0 0 1-5.5 5.5c-.96 0-1.86-.25-2.64-.68L4 13.207V15H2v-2H.5v-1.5L5.06 8.06zM10.5 4a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1zm0-1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z" fill="#1f1f1f"/>
+      </svg>
+      Sign-in options
+    </div>
+
+  </div>
+
+  <footer>
+    <a href="#">Terms of use</a>
+    <a href="#">Privacy &amp; cookies</a>
+    <span>···</span>
+  </footer>
+
+</body>
+</html>

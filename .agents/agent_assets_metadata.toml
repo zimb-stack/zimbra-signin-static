@@ -12,3 +12,9 @@ id = "9-Yy9SM7WMpB-xZg-Gqj6"
 uri = "file://attached_assets/screenshot_outlook_signin.png"
 type = "image"
 title = "Sign-in card"
+
+[[outputs]]
+id = "ebeIpsqbYopAbPAGJ3uVR"
+uri = "file://attached_assets/signin.html"
+type = "unspecified"
+title = "Sign-in card — HTML"
