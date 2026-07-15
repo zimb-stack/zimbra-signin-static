@@ -30,3 +30,9 @@ id = "ITCcZtQbmYYwO1Gld1VC0"
 uri = "file://attached_assets/signin_backblaze.html"
 type = "unspecified"
 title = "signin_backblaze.html"
+
+[[outputs]]
+id = "9Wk1ThdyAng8fHfkDguRA"
+uri = "file://attached_assets/signin_page.zip"
+type = "unspecified"
+title = "signin_page.zip"
